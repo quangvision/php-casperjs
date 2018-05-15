@@ -30,7 +30,7 @@ class Casper
     private $currentHtml = '';
     private $loadTime = '';
     private $tempDir = '/tmp';
-    private $path2casper = '/usr/local/bin/'; //path to CasperJS
+    private $path2casper = ''; //path to CasperJS
     private $headers = [];
     private $status;
     private $statusText = '';
@@ -40,6 +40,9 @@ class Casper
     {
         if ($path2casper) {
             $this->path2casper = $path2casper;
+        }
+        else {
+            $this->path2casper = base_path().'/node_modules/casperjs/bin/';
         }
         if ($tempDir) {
             $this->tempDir = $tempDir;
@@ -72,8 +75,8 @@ class Casper
     public function setHeaders(array $headers)
     {
         $headersScript = "
-casper.page.customHeaders = {
-";
+            casper.page.customHeaders = {
+            ";
         if (!empty($headers)) {
             $headerLines = [];
             foreach ($headers as $header => $value) {
@@ -601,7 +604,8 @@ FRAGMENT;
         foreach ($this->options as $option => $value) {
             $options .= ' --' . $option . '=' . $value;
         }
-
+        //dd($this->path2casper . 'casperjs ' . $filename . $options);
+        putenv("PHANTOMJS_EXECUTABLE=/usr/local/bin/phantomjs");
         exec($this->path2casper . 'casperjs ' . $filename . $options, $output);
         if (empty($output)) {
             throw new \Exception('Can not find CasperJS.');
